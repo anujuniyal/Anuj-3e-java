@@ -1,0 +1,102 @@
+import java.text.NumberFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Scanner;
+public class SalarySlip {
+    @SuppressWarnings("deprecation")
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String PASSWORD = "Gojosatoru0";
+        double[] hra = {20, 15, 10}; // HRA percentages for HR, IT, Sales
+        double[] ta = {10, 8, 5};    // TA percentages for HR, IT, Sales
+        double[] pf = {15, 21, 19};   // PF percentages for HR, IT, Sales
+        double[] da = {7, 10, 9};     // DA percentages for HR, IT, Sales
+        while (true) {
+            System.out.println("Current Date and Time: " + new Date());
+            System.out.println("Choose your locale: 1. US 2. India 3. Japan");
+            int localeChoice = scanner.nextInt();
+            Locale locale;
+            switch (localeChoice) {
+                case 1 ->
+                    locale = Locale.US;
+                case 2 ->
+                    locale = new Locale("en", "IN");
+                case 3 ->
+                    locale = Locale.JAPAN;
+                default ->
+                    locale = Locale.getDefault();
+            }
+            System.out.println("Choose user type: 1. Employee 2. Manager 3. Exit");
+            int userType = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            switch (userType) {
+                case 1 -> { // Employee
+                    System.out.println("Enter your name:");
+                    String name = scanner.nextLine();
+                    System.out.println("Enter your department (0 for HR, 1 for IT, 2 for Sales):");
+                    int departmentIndex = scanner.nextInt();
+                    System.out.println("Enter your basic pay:");
+                    double basicPay = scanner.nextDouble();
+                    // Calculate gross salary
+                    double grossSalary = basicPay + (basicPay * hra[departmentIndex] / 100)
+                            + (basicPay * ta[departmentIndex] / 100)
+                            + (basicPay * da[departmentIndex] / 100);
+
+                    // Calculate tax
+                    double tax = 0;
+                    if (basicPay <= 300000) {
+                        tax = grossSalary * 0.05; // 5% tax
+                    } else if (basicPay <= 600000) {
+                        tax = grossSalary * 0.10; // 10% tax
+                    } else if (basicPay <= 1200000) {
+                        tax = grossSalary * 0.12; // 12% tax
+                    } else {
+                        tax = grossSalary * 0.15; // 15% tax
+                    }
+
+                    // Calculate net salary
+                    double netSalary = grossSalary - (grossSalary * pf[departmentIndex] / 100) - tax;
+
+                    // Display employee details
+                    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+                    System.out.println("Name:" + name);
+                    System.out.println("Department: " + (departmentIndex == 0 ? "HR" : departmentIndex == 1 ? "IT" : "Sales"));
+                    System.out.println("Basic Pay: " + currencyFormatter.format(basicPay));
+                    System.out.println("HRA: " + hra[departmentIndex]);
+                    System.out.println("TA: " + ta[departmentIndex]);
+                    System.out.println("PF: " + pf[departmentIndex]);
+                    System.out.println("DA: " + da[departmentIndex]);
+                    System.out.println("Gross Salary: " + currencyFormatter.format(grossSalary));
+                    System.out.println("Net Salary: " + currencyFormatter.format(netSalary));
+                }
+                case 2 -> { // Manager
+                    System.out.println("Enter manager password:");
+                    String password = scanner.nextLine();
+                    if (PASSWORD.equals(password)) {
+                        System.out.println("Enter department index (0 for HR, 1 for IT, 2 for Sales):");
+                        int departmentIndex = scanner.nextInt();
+                        System.out.println("Enter new HRA percentage:");
+                        hra[departmentIndex] = scanner.nextDouble();
+                        System.out.println("Enter new TA percentage:");
+                        ta[departmentIndex] = scanner.nextDouble();
+                        System.out.println("Enter new PF percentage:");
+                        pf[departmentIndex] = scanner.nextDouble();
+                        System.out.println("Enter new DA percentage:");
+                        da[departmentIndex] = scanner.nextDouble();
+                        System.out.printf("Updated percentages for Department " + departmentIndex + "HRA" + hra[departmentIndex] + "TA" + ta[departmentIndex] + "PF" + pf[departmentIndex] + "DA" + da[departmentIndex]);
+                    } else {
+                        System.out.println("Invalid password.");
+                    }
+                }
+                case 3 -> {
+                    // Exit
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                }
+                default ->
+                    System.out.println("Invalid user type.");
+            }
+        }
+    }
+}
